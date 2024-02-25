@@ -9,17 +9,21 @@ const limitX = 0;
 const limitY = 0;
 
 function place(coordX, coordY) {
-    board[coordY][coordX] = 1;
-    //Populate array behind with zeroes to avoid undefined
-    for (let y = coordY-1; y >= limitY; y--) {
-        for (let x = coordX-1; x >= limitX; x--) {
-            if (!board[y][x]) {
-                board[y][x] = 0;
+    if (board[coordY][coordX] === 1) {
+        board[coordY][coordX] = 0;
+    } else {
+        board[coordY][coordX] = 1;
+        //Populate array behind with zeroes to avoid undefined
+        for (let y = coordY-1; y >= limitY; y--) {
+            for (let x = coordX-1; x >= limitX; x--) {
+                if (!board[y][x]) {
+                    board[y][x] = 0;
+                }
             }
         }
+        limitX = coordX;
+        limitY = coordY;
     }
-    limitX = coordX;
-    limitY = coordY;
 }
 
 function setup() {
