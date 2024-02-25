@@ -39,7 +39,7 @@ function input(coordX, coordY) {
 }
 
 function handleClick(event) {
-    input(event.offsetX, event.offsetY);
+    input(event.offsetX + awayX, event.offsetY + awayY);
 }
 
 function endSetup() {
