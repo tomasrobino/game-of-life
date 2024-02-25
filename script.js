@@ -8,7 +8,7 @@ let mousePosition = {x: 0, y: 0};
 const limitX = 0;
 const limitY = 0;
 
-function place(coordX, coordY) {
+function input(coordX, coordY) {
     if (board[coordY][coordX] === 1) {
         board[coordY][coordX] = 0;
     } else {
