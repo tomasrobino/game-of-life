@@ -64,7 +64,67 @@ function start() {
     setInterval(update, 1000);
 }
 
+function countNeighbours(array, posX, posY) {
+    let counter = 0;
+
+    if (posX !== 0) {
+        //Left
+        if (array[posY][posX-1] === 1) counter++;
+        //Upper left
+        if (posY !== 0) {
+            if (array[posY-1][posX-1] === 1) counter++;
+        }
+        //Bottom left
+        if (posY !== array.length-1) {
+            if (array[posY+1][posX-1] === 1) counter++;
+        }
+    }
+
+    if (posY !== 0) {
+        //Up
+        if (array[posY-1][posX] === 1) counter++;
+    }
+    if (posY !== array.length-1) {
+        //Down
+        if (array[posY+1][posX] === 1) counter++;
+    }
+
+    if (posX !== array[posY].length) {
+        //Right
+        if (array[posY][posX+1] === 1) counter++;
+        //Upper right
+        if (posY !== 0) {
+            if (array[posY-1][posX+1] === 1) counter++;
+        }
+        //Bottom right
+        if (posY !== array.length-1) {
+            if (array[posY+1][posX+1] === 1) counter++;
+        }
+    }
+
+    return counter;
+}
+
 function update() {
+    const boardCopy = new Array(board.length).fill([]);
+
+
+    for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board[y].length; x++) {
+            if (board[y][x] === 1) {
+                boardCopy[y][x] = 1;
+            }
+        }
+    }
+
+    for (let y = 0; y < boardCopy.length; y++) {
+        for (let x = 0; x < boardCopy[y].length; x++) {
+            //Update logic begins here
+            if (boardCopy[y][x] === 1) {
+                let neighbours = countNeighbours(boardCopy, x, y);
+            }
+        }
+    }
 }
 
 function stop() {
