@@ -1,3 +1,5 @@
+const SQUARE_SIDE = 10;
+
 const canvas = document.querySelector("#canvas");
 const button = document.querySelector("#button");
 const width = canvas.width;
@@ -13,9 +15,19 @@ let limitY = 0;
 let setupDone = false;
 
 
+function renderCanvas() {
+    for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board[y].length; x++) {
+            if (board[y][x] === 1) {
+                ctx.fillRect(x*SQUARE_SIDE, y*SQUARE_SIDE, SQUARE_SIDE, SQUARE_SIDE);
+            }
+        }
+    }
+}
+
 function input(coordX, coordY) {
-    coordX = Math.round(coordX/10);
-    coordY = Math.round(coordY/10);
+    coordX = Math.floor(coordX/SQUARE_SIDE);
+    coordY = Math.floor(coordY/SQUARE_SIDE);
 
     if (!board[coordY]) board[coordY] = [];
     if (board[coordY][coordX] === 1) {
@@ -35,6 +47,9 @@ function input(coordX, coordY) {
         console.log("Added " + coordX + ", " + coordY);
         limitX = coordX;
         limitY = coordY;
+        if (!setupDone) {
+            ctx.fillRect(coordX*SQUARE_SIDE, coordY*SQUARE_SIDE, SQUARE_SIDE, SQUARE_SIDE);
+        }
     }
 }
 
@@ -42,9 +57,26 @@ function handleClick(event) {
     input(event.offsetX + awayX, event.offsetY + awayY);
 }
 
+function start() {
+    button.removeEventListener("click", start);
+    button.addEventListener("click", stop);
+
+    setInterval(update, 1000);
+}
+
+function update() {
+}
+
+function stop() {
+    button.removeEventListener("click", stop);
+    button.addEventListener("click", start);
+}
+
 function endSetup() {
     canvas.removeEventListener("click", handleClick);
     button.removeEventListener("click", endSetup);
+    setupDone = true;
+    button.addEventListener("click", start);
 }
 
 canvas.addEventListener("click", handleClick);
