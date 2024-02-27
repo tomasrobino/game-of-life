@@ -13,12 +13,16 @@ let mousePosition = {x: 0, y: 0};
 let limitX = 0;
 let limitY = 0;
 let setupDone = false;
-
+let intervalID;
 
 function renderCanvas() {
     for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
             if (board[y][x] === 1) {
+                ctx.fillStyle = "black";
+                ctx.fillRect(x*SQUARE_SIDE, y*SQUARE_SIDE, SQUARE_SIDE, SQUARE_SIDE);
+            } else {
+                ctx.fillStyle = "white";
                 ctx.fillRect(x*SQUARE_SIDE, y*SQUARE_SIDE, SQUARE_SIDE, SQUARE_SIDE);
             }
         }
@@ -61,7 +65,7 @@ function start() {
     button.removeEventListener("click", start);
     button.addEventListener("click", stop);
 
-    setInterval(update, 1000);
+    intervalID = setInterval(update, 1000);
 }
 
 function countNeighbours(array, posX, posY) {
@@ -106,28 +110,35 @@ function countNeighbours(array, posX, posY) {
 }
 
 function update() {
-    const boardCopy = new Array(board.length).fill([]);
-
-
-    for (let y = 0; y < board.length; y++) {
-        for (let x = 0; x < board[y].length; x++) {
-            if (board[y][x] === 1) {
-                boardCopy[y][x] = 1;
-            }
-        }
+    const boardCopy = structuredClone(board);
+    for (let y = 0; y < boardCopy.length; y++) {
+        boardCopy[y].push(0);
     }
+    boardCopy.push(new Array(boardCopy[0].length));
 
     for (let y = 0; y < boardCopy.length; y++) {
         for (let x = 0; x < boardCopy[y].length; x++) {
             //Update logic begins here
+            let neighbours = countNeighbours(boardCopy, x, y);
+            if (y=== 1 && x === 2) {
+            }
             if (boardCopy[y][x] === 1) {
-                let neighbours = countNeighbours(boardCopy, x, y);
+                if (neighbours < 2 || neighbours > 3) {
+                    //Dies
+                    board[y][x] = 0;
+                }
+            } else if (neighbours === 3) {
+                //Becomes alive
+                board[y][x] = 1;
             }
         }
     }
+
+    renderCanvas();
 }
 
 function stop() {
+    clearInterval(intervalID)
     button.removeEventListener("click", stop);
     button.addEventListener("click", start);
 }
@@ -137,6 +148,7 @@ function endSetup() {
     button.removeEventListener("click", endSetup);
     setupDone = true;
     button.addEventListener("click", start);
+    console.log(board);
 }
 
 canvas.addEventListener("click", handleClick);
