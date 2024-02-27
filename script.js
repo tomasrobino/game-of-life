@@ -5,7 +5,6 @@ const button = document.querySelector("#button");
 const width = canvas.width;
 const height = canvas.height;
 const ctx = canvas.getContext("2d");
-//const boardCoord = [500, 100];
 const board = [];
 let awayX = 0;
 let awayY = 0;
@@ -15,15 +14,16 @@ let limitY = 0;
 let setupDone = false;
 let intervalID;
 
+
 function renderCanvas() {
     for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
             if (board[y][x] === 1) {
                 ctx.fillStyle = "black";
-                ctx.fillRect(x*SQUARE_SIDE, y*SQUARE_SIDE, SQUARE_SIDE, SQUARE_SIDE);
+                ctx.fillRect(x*SQUARE_SIDE + awayX, y*SQUARE_SIDE + awayY, SQUARE_SIDE, SQUARE_SIDE);
             } else {
                 ctx.fillStyle = "white";
-                ctx.fillRect(x*SQUARE_SIDE, y*SQUARE_SIDE, SQUARE_SIDE, SQUARE_SIDE);
+                ctx.fillRect(x*SQUARE_SIDE + awayX, y*SQUARE_SIDE + awayY, SQUARE_SIDE, SQUARE_SIDE);
             }
         }
     }
@@ -64,7 +64,6 @@ function handleClick(event) {
 function start() {
     button.removeEventListener("click", start);
     button.addEventListener("click", stop);
-
     intervalID = setInterval(update, 1000);
 }
 
@@ -105,17 +104,52 @@ function countNeighbours(array, posX, posY) {
             if (array[posY+1][posX+1] === 1) counter++;
         }
     }
-
     return counter;
 }
 
 function update() {
-    const boardCopy = structuredClone(board);
-    for (let y = 0; y < boardCopy.length; y++) {
-        boardCopy[y].push(0);
-    }
-    boardCopy.push(new Array(boardCopy[0].length));
+    let flag = 0;
+    for (let y = 0; y < board.length; y++) {
+        if (board[y][0] === 1) {
+            for (let k = 0; k < board.length; k++) {
+                board[k].unshift(0);
+            }
+            awayX-=SQUARE_SIDE;
+            flag++;
+            y++;
+        }
 
+        if (board[y][board[y].length-1] === 1) {
+            for (let k = 0; k < board.length; k++) {
+                board[k].push(0);
+            }
+            flag++;
+        }
+
+        if (flag===2) break;
+    }
+
+    flag = 0;
+
+    for (let x = 0; x < board[0].length; x++) {
+        if (board[0][x] === 1) {
+            board.unshift(new Array(board[0].length));
+            awayY-=SQUARE_SIDE;
+            flag++;
+            x++;
+        }
+
+        if (board[board.length-1][x] === 1) {
+            board.push(new Array(board[0].length));
+            flag++;
+        }
+
+        if (flag===2) break;
+    }
+
+    const boardCopy = structuredClone(board);
+
+    
     for (let y = 0; y < boardCopy.length; y++) {
         for (let x = 0; x < boardCopy[y].length; x++) {
             //Update logic begins here
@@ -133,12 +167,12 @@ function update() {
             }
         }
     }
-
+    console.log(board)
     renderCanvas();
 }
 
 function stop() {
-    clearInterval(intervalID)
+    clearInterval(intervalID);
     button.removeEventListener("click", stop);
     button.addEventListener("click", start);
 }
