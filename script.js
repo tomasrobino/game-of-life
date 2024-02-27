@@ -13,17 +13,22 @@ let limitX = 0;
 let limitY = 0;
 let setupDone = false;
 let intervalID;
+let scale = 1;
+
+function renderCanvas(quotient = 1) {
+    let canvasBounding = canvas.getBoundingClientRect();
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvasBounding.width, canvasBounding.height);
 
 
-function renderCanvas() {
     for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
             if (board[y][x] === 1) {
                 ctx.fillStyle = "black";
-                ctx.fillRect(x*SQUARE_SIDE + awayX, y*SQUARE_SIDE + awayY, SQUARE_SIDE, SQUARE_SIDE);
+                ctx.fillRect(x*SQUARE_SIDE*quotient + awayX, y*SQUARE_SIDE*quotient + awayY, SQUARE_SIDE*quotient, SQUARE_SIDE*quotient);
             } else {
                 ctx.fillStyle = "white";
-                ctx.fillRect(x*SQUARE_SIDE + awayX, y*SQUARE_SIDE + awayY, SQUARE_SIDE, SQUARE_SIDE);
+                ctx.fillRect(x*SQUARE_SIDE*quotient + awayX, y*SQUARE_SIDE*quotient + awayY, SQUARE_SIDE*quotient, SQUARE_SIDE*quotient);
             }
         }
     }
@@ -59,6 +64,12 @@ function input(coordX, coordY) {
 
 function handleClick(event) {
     input(event.offsetX + awayX, event.offsetY + awayY);
+}
+
+function handleWheel(event) {
+    event.preventDefault();
+    scale+=event.deltaY*-0.001;
+    renderCanvas(scale);
 }
 
 function start() {
@@ -168,7 +179,7 @@ function update() {
         }
     }
     console.log(board)
-    renderCanvas();
+    renderCanvas(scale);
 }
 
 function stop() {
@@ -186,3 +197,4 @@ function endSetup() {
 }
 
 canvas.addEventListener("click", handleClick);
+canvas.addEventListener("wheel", handleWheel);
